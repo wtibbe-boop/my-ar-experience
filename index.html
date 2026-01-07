@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Interactive WebAR</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    
+    <style>
+      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      /* UI Overlay for Buttons */
+      .controls {
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+        z-index: 999;
+      }
+      button {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        cursor: pointer;
+      }
+      /* Loading Screen */
+      #loader {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="loader"><h2>Loading AR Experience...</h2></div>
+
+    <div class="controls">
+      <button onclick="togglePart('engine')">Part A</button>
+      <button onclick="togglePart('shell')">Part B</button>
+      <button onclick="togglePart('all')">Reset</button>
+    </div>
+
+    <a-scene 
+      embedded 
+      arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;"
+      vr-mode-ui="enabled: false">
+      
+      <a-assets>
+        <a-asset-item id="fullModel" src="https://cdn.jsdelivr.net/gh/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF-Binary/Duck.glb"></a-asset-item>
+      </a-assets>
+
+      <a-marker preset="hiro" id="marker">
+        <a-entity id="modelContainer" position="0 0 0" scale="1 1 1">
+            <a-entity id="partA" gltf-model="#fullModel" position="-0.5 0 0" visible="true"></a-entity>
+            <a-entity id="partB" gltf-model="#fullModel" position="0.5 0 0" visible="true"></a-entity>
+        </a-entity>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      // Hide loader once scene is ready
+      window.addEventListener('load', () => {
+        document.getElementById('loader').style.display = 'none';
+      });
+
+      function togglePart(choice) {
+        const a = document.getElementById('partA');
+        const b = document.getElementById('partB');
+        
+        if (choice === 'engine') {
+          a.setAttribute('visible', 'true');
+          b.setAttribute('visible', 'false');
+        } else if (choice === 'shell') {
+          a.setAttribute('visible', 'false');
+          b.setAttribute('visible', 'true');
+        } else {
+          a.setAttribute('visible', 'true');
+          b.setAttribute('visible', 'true');
+        }
+      }
+    </script>
+  </body>
+</html>
